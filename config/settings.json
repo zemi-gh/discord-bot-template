@@ -1,0 +1,9 @@
+{
+    "welcome_enabled": false,
+    "welcome_channel_id": null,
+    "welcome_message": "Welcome {user} to {server}!\nYou are member #{members}",
+    "log_channel_id": null,
+    "auto_role_id": null,
+    "status_type": "playing",
+    "status_text": "/help for commands"
+}

@@ -1,0 +1,10 @@
+{
+    "bot_name": "Template Bot",
+    "bot_description": "A customizable Discord bot template for server management and community engagement!",
+    "welcome_title": "Welcome to Template Bot!",
+    "welcome_description": "I'm **Template Bot**, your customizable Discord bot featuring:\n\n**Server Management** - Moderation, roles, channels & more\n**Ticket System** - Professional support ticket management\n**Polls & Utilities** - Engage your community\n\nType `/help` to see all available commands!",
+    "help_title": "Template Bot - Command List",
+    "footer_text": "Template Bot - Made with love",
+    "ticket_footer": "Template Bot Ticket System",
+    "features_list": "Server Management\nTicket System\nPolls & Utilities\nCustomizable"
+}

@@ -1,0 +1,7 @@
+{
+    "bot_token": "YOUR_DISCORD_BOT_TOKEN_HERE",
+    "admin_users": [
+        "YOUR_DISCORD_USER_ID_HERE"
+    ],
+    "guild_id": "824736705265270815"
+}
