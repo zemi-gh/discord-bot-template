@@ -779,4 +779,4 @@ def setup_management_commands(client, config):
 
         await channel.send(embed=embed)
 
-__all__ = ['setup_management_commands', 'load_config', 'save_config', 'is_admin']
+__all__ = ['setup_management_commands']

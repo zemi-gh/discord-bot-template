@@ -1,39 +1,23 @@
 """
 Config Loader Utility
-Manages loading and saving of separate config files for easier management.
+Manages loading and saving of a single unified config file.
 
-Config files:
-- bot.json       : Bot token, admin users, guild ID
-- branding.json  : Bot branding (name, descriptions, footers)
-- settings.json  : General settings (welcome, status, auto-role)
-- tickets.json   : Ticket system settings
-- server_stats.json : Server stats per guild
-- ranked.json    : Ranked matchmaking data per guild
+Config file: config.json
+Contains all bot settings in a single file for easier management.
 """
 
 import json
 import os
 
 CONFIG_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_FILE = os.path.join(CONFIG_DIR, 'config.json')
 
-# Config file paths
-CONFIG_FILES = {
-    'bot': 'bot.json',
-    'branding': 'branding.json',
-    'settings': 'settings.json',
-    'tickets': 'tickets.json',
-    'server_stats': 'server_stats.json',
-    'ranked': 'ranked.json'
-}
-
-# Default configs for each file
-DEFAULT_CONFIGS = {
-    'bot': {
-        "bot_token": "YOUR_DISCORD_BOT_TOKEN_HERE",
-        "admin_users": [],
-        "guild_id": ""
-    },
-    'branding': {
+# Default configuration
+DEFAULT_CONFIG = {
+    "bot_token": "YOUR_DISCORD_BOT_TOKEN_HERE",
+    "admin_users": [],
+    "guild_id": "",
+    "branding": {
         "bot_name": "Template Bot",
         "bot_description": "A customizable Discord bot template for server management and community engagement!",
         "welcome_title": "Welcome to Template Bot!",
@@ -43,7 +27,7 @@ DEFAULT_CONFIGS = {
         "ticket_footer": "Template Bot Ticket System",
         "features_list": "Server Management\nTicket System\nPolls & Utilities\nCustomizable"
     },
-    'settings': {
+    "settings": {
         "welcome_enabled": False,
         "welcome_channel_id": None,
         "welcome_message": "Welcome {user} to {server}!\nYou are member #{members}",
@@ -52,132 +36,126 @@ DEFAULT_CONFIGS = {
         "status_type": "playing",
         "status_text": "/help for commands"
     },
-    'tickets': {
+    "ticket_settings": {
         "ticket_category_id": None,
         "support_role_id": None,
         "transcript_channel_id": None,
         "transcript_enabled": True
     },
-    'server_stats': {},
-    'ranked': {}
+    "server_stats": {},
+    "ranked": {}
 }
 
 
-def get_config_path(config_name: str) -> str:
-    """Get the full path for a config file"""
-    return os.path.join(CONFIG_DIR, CONFIG_FILES[config_name])
-
-
-def load_config_file(config_name: str) -> dict:
-    """Load a specific config file, creating with defaults if it doesn't exist"""
-    config_path = get_config_path(config_name)
-
-    if not os.path.exists(config_path):
+def load_all_configs() -> dict:
+    """Load the unified config file"""
+    if not os.path.exists(CONFIG_FILE):
         # Create with default values
-        save_config_file(config_name, DEFAULT_CONFIGS[config_name])
-        return DEFAULT_CONFIGS[config_name].copy()
+        save_all_configs(DEFAULT_CONFIG)
+        return DEFAULT_CONFIG.copy()
 
     try:
-        with open(config_path, 'r') as f:
-            return json.load(f)
+        with open(CONFIG_FILE, 'r') as f:
+            config = json.load(f)
+            # Merge with defaults to ensure all keys exist
+            merged = DEFAULT_CONFIG.copy()
+            merged.update(config)
+            # Ensure nested dicts are also merged
+            for key in ['branding', 'settings', 'ticket_settings']:
+                if key in DEFAULT_CONFIG:
+                    merged[key] = DEFAULT_CONFIG[key].copy()
+                    if key in config:
+                        merged[key].update(config[key])
+            # Keep server_stats and ranked as-is from config
+            if 'server_stats' in config:
+                merged['server_stats'] = config['server_stats']
+            if 'ranked' in config:
+                merged['ranked'] = config['ranked']
+            return merged
     except (json.JSONDecodeError, IOError):
-        return DEFAULT_CONFIGS[config_name].copy()
-
-
-def save_config_file(config_name: str, data: dict):
-    """Save a specific config file"""
-    config_path = get_config_path(config_name)
-    with open(config_path, 'w') as f:
-        json.dump(data, f, indent=4)
-
-
-def load_all_configs() -> dict:
-    """
-    Load all config files and return a unified config dict
-    This maintains backward compatibility with the old single-file structure
-    """
-    config = {}
-
-    # Load bot config (top-level keys)
-    bot_config = load_config_file('bot')
-    config['bot_token'] = bot_config.get('bot_token', DEFAULT_CONFIGS['bot']['bot_token'])
-    config['admin_users'] = bot_config.get('admin_users', [])
-    config['guild_id'] = bot_config.get('guild_id', '')
-
-    # Load nested configs
-    config['branding'] = load_config_file('branding')
-    config['settings'] = load_config_file('settings')
-    config['ticket_settings'] = load_config_file('tickets')
-    config['server_stats'] = load_config_file('server_stats')
-    config['ranked'] = load_config_file('ranked')
-
-    return config
+        return DEFAULT_CONFIG.copy()
 
 
 def save_all_configs(config: dict):
-    """
-    Save all configs from a unified config dict to separate files
-    """
-    # Save bot config
-    bot_config = {
-        'bot_token': config.get('bot_token', DEFAULT_CONFIGS['bot']['bot_token']),
+    """Save the unified config file"""
+    with open(CONFIG_FILE, 'w') as f:
+        json.dump(config, f, indent=4)
+
+
+# Convenience functions for specific configs (for backward compatibility)
+def load_bot_config() -> dict:
+    config = load_all_configs()
+    return {
+        'bot_token': config.get('bot_token'),
         'admin_users': config.get('admin_users', []),
         'guild_id': config.get('guild_id', '')
     }
-    save_config_file('bot', bot_config)
 
-    # Save nested configs
-    if 'branding' in config:
-        save_config_file('branding', config['branding'])
-    if 'settings' in config:
-        save_config_file('settings', config['settings'])
-    if 'ticket_settings' in config:
-        save_config_file('tickets', config['ticket_settings'])
-    if 'server_stats' in config:
-        save_config_file('server_stats', config['server_stats'])
-    if 'ranked' in config:
-        save_config_file('ranked', config['ranked'])
-
-
-# Convenience functions for specific configs
-def load_bot_config() -> dict:
-    return load_config_file('bot')
 
 def save_bot_config(data: dict):
-    save_config_file('bot', data)
+    config = load_all_configs()
+    config['bot_token'] = data.get('bot_token', config['bot_token'])
+    config['admin_users'] = data.get('admin_users', config['admin_users'])
+    config['guild_id'] = data.get('guild_id', config['guild_id'])
+    save_all_configs(config)
+
 
 def load_branding_config() -> dict:
-    return load_config_file('branding')
+    config = load_all_configs()
+    return config.get('branding', DEFAULT_CONFIG['branding'])
+
 
 def save_branding_config(data: dict):
-    save_config_file('branding', data)
+    config = load_all_configs()
+    config['branding'] = data
+    save_all_configs(config)
+
 
 def load_settings_config() -> dict:
-    return load_config_file('settings')
+    config = load_all_configs()
+    return config.get('settings', DEFAULT_CONFIG['settings'])
+
 
 def save_settings_config(data: dict):
-    save_config_file('settings', data)
+    config = load_all_configs()
+    config['settings'] = data
+    save_all_configs(config)
+
 
 def load_tickets_config() -> dict:
-    return load_config_file('tickets')
+    config = load_all_configs()
+    return config.get('ticket_settings', DEFAULT_CONFIG['ticket_settings'])
+
 
 def save_tickets_config(data: dict):
-    save_config_file('tickets', data)
+    config = load_all_configs()
+    config['ticket_settings'] = data
+    save_all_configs(config)
+
 
 def load_server_stats_config() -> dict:
-    return load_config_file('server_stats')
+    config = load_all_configs()
+    return config.get('server_stats', {})
+
 
 def save_server_stats_config(data: dict):
-    save_config_file('server_stats', data)
+    config = load_all_configs()
+    config['server_stats'] = data
+    save_all_configs(config)
+
 
 def load_ranked_config() -> dict:
-    return load_config_file('ranked')
+    config = load_all_configs()
+    return config.get('ranked', {})
+
 
 def save_ranked_config(data: dict):
-    save_config_file('ranked', data)
+    config = load_all_configs()
+    config['ranked'] = data
+    save_all_configs(config)
 
 
-# Permission helper (moved here for central access)
+# Permission helper
 def is_admin(user_id: int, config: dict) -> bool:
     """Check if user is in admin list"""
     return str(user_id) in config.get('admin_users', [])

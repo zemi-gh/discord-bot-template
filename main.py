@@ -117,6 +117,11 @@ async def on_ready():
     except Exception as e:
         print(f'❌ Error syncing commands: {e}')
 
+    # Start server stats background task if it exists
+    if hasattr(client, 'server_stats_task') and not client.server_stats_task.is_running():
+        client.server_stats_task.start()
+        print("📊 Server stats background task started")
+
     print("="*50)
     bot_name = config.get('branding', {}).get('bot_name', 'Template Bot')
     print(f" 🎉 {bot_name} is ready!")

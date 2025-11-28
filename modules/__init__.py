@@ -7,9 +7,6 @@ from .ranked import *
 __all__ = [
     # Management module
     'setup_management_commands',
-    'load_config',
-    'save_config',
-    'is_admin',
 
     # Tickets module
     'setup_ticket_commands',

@@ -57,8 +57,8 @@ def setup_server_stats_commands(client, config):
         """Wait until the bot is ready before starting the update loop"""
         await client.wait_until_ready()
 
-    # Start the background task
-    update_server_stats.start()
+    # Store the task on the client so it can be started later
+    client.server_stats_task = update_server_stats
 
     @client.tree.command(name="serverstats", description="Manage server stats tracking")
     async def serverstats(interaction: discord.Interaction, action: str = None):

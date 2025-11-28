@@ -1,0 +1,34 @@
+{
+    "bot_token": "YOUR_DISCORD_BOT_TOKEN",
+    "admin_users": [
+        "YOUR_USER_ID"
+    ],
+    "guild_id": "YOUR_GUILD_ID",
+    "branding": {
+        "bot_name": "Template Bot",
+        "bot_description": "A customizable Discord bot for server management and community engagement!",
+        "welcome_title": "Welcome to Template!",
+        "welcome_description": " ",
+        "help_title": "Template Bot - Command List",
+        "footer_text": "Template Bot - Made with love",
+        "ticket_footer": "Template Bot Ticket System",
+        "features_list": "Server Management\nTicket System\nPolls & Utilities\nCustomizable"
+    },
+    "settings": {
+        "welcome_enabled": false,
+        "welcome_channel_id": null,
+        "welcome_message": "Welcome {user} to {server}!\nYou are member #{members}",
+        "log_channel_id": null,
+        "auto_role_id": null,
+        "status_type": "playing",
+        "status_text": "/help for commands"
+    },
+    "ticket_settings": {
+        "ticket_category_id": null,
+        "support_role_id": null,
+        "transcript_channel_id": null,
+        "transcript_enabled": true
+    },
+    "server_stats": {},
+    "ranked": {}
+}

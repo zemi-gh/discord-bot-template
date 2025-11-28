@@ -597,7 +597,4 @@ def setup_admin_panel_commands(client, config):
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    # Add persistent view
-    client.add_view(AdminPanelView(config))
-
-__all__ = ['setup_admin_panel_commands']
+__all__ = ['setup_admin_panel_commands', 'AdminPanelView']
