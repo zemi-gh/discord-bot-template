@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# RLC Bot Setup Script
+# Discord Bot Setup Script
 # This script will install dependencies, configure the bot, and set it up to run in the background
 
 set -e  # Exit on error
@@ -38,9 +38,9 @@ command_exists() {
 # Clear screen
 clear
 
-print_header "🚀 RLC Bot Setup Script"
+print_header "🚀 Discord Bot Setup Script"
 
-print_color "$GREEN" "Welcome to the RLC Bot setup wizard!"
+print_color "$GREEN" "Welcome to the Discord Bot setup wizard!"
 print_color "$YELLOW" "This script will:"
 echo "  ✓ Check system requirements"
 echo "  ✓ Install Python dependencies"
@@ -150,14 +150,23 @@ while true; do
     print_color "$GREEN" "✓ Added admin: $USER_ID"
 done
 
+# Ask for bot name
+echo ""
+print_color "$CYAN" "🤖 Bot Branding"
+read -p "Enter your bot name [default: RLC Bot]: " BOT_NAME
+BOT_NAME=${BOT_NAME:-RLC Bot}
+
+read -p "Enter bot description [default: A customizable Discord bot]: " BOT_DESC
+BOT_DESC=${BOT_DESC:-A customizable Discord bot for server management and community engagement!}
+
 # Ask for bot status
 echo ""
 print_color "$CYAN" "🎮 Bot Status (Optional)"
 read -p "Enter bot status type (playing/watching/listening/competing) [default: playing]: " STATUS_TYPE
 STATUS_TYPE=${STATUS_TYPE:-playing}
 
-read -p "Enter bot status text [default: Rocket League | /help]: " STATUS_TEXT
-STATUS_TEXT=${STATUS_TEXT:-Rocket League | /help}
+read -p "Enter bot status text [default: /help for commands]: " STATUS_TEXT
+STATUS_TEXT=${STATUS_TEXT:-/help for commands}
 
 # Create config directory if it doesn't exist
 mkdir -p config
@@ -170,10 +179,20 @@ cat > config/config.json << EOF
     "bot_token": "$BOT_TOKEN",
     "admin_users": $ADMIN_USERS,
     "guild_id": "$GUILD_ID",
+    "branding": {
+        "bot_name": "$BOT_NAME",
+        "bot_description": "$BOT_DESC",
+        "welcome_title": "Welcome to $BOT_NAME!",
+        "welcome_description": "I'm **$BOT_NAME**, your customizable Discord bot featuring:\\n\\n**Server Management** - Moderation, roles, channels & more\\n**Ticket System** - Professional support ticket management\\n**Ranked Matchmaking** - Competitive 1v1, 2v2, 3v3 matches\\n**Polls & Utilities** - Engage your community\\n\\nType \\\`/help\\\` to see all available commands!",
+        "help_title": "$BOT_NAME - Command List",
+        "footer_text": "$BOT_NAME - Made with love",
+        "ticket_footer": "$BOT_NAME Ticket System",
+        "features_list": "Server Management\\nTicket System\\nRanked Matchmaking\\nPolls & Utilities\\nCustomizable"
+    },
     "settings": {
         "welcome_enabled": false,
         "welcome_channel_id": null,
-        "welcome_message": "Welcome {user} to {server}! 🎉\\nYou are member #{members}",
+        "welcome_message": "Welcome {user} to {server}!\\nYou are member #{members}",
         "log_channel_id": null,
         "auto_role_id": null,
         "status_type": "$STATUS_TYPE",
@@ -184,14 +203,11 @@ cat > config/config.json << EOF
         "support_role_id": null,
         "transcript_channel_id": null,
         "transcript_enabled": true
-    }
+    },
+    "server_stats": {},
+    "ranked": {}
 }
 EOF
-
-# Create user_data.json if it doesn't exist
-if [ ! -f "config/user_data.json" ]; then
-    echo "{}" > config/user_data.json
-fi
 
 print_color "$GREEN" "✓ Configuration saved!"
 
@@ -411,8 +427,8 @@ chmod +x logs.sh
 cat > status.sh << 'EOF'
 #!/bin/bash
 
-echo "🤖 RLC Bot Status"
-echo "===================="
+echo "🤖 Discord Bot Status"
+echo "======================="
 echo ""
 
 EOF
@@ -475,7 +491,7 @@ print_color "$GREEN" "✓ Helper scripts created!"
 # ========================================
 print_header "🎉 Setup Complete!"
 
-print_color "$GREEN" "Your RLC Bot is now configured and ready to run!"
+print_color "$GREEN" "Your Discord Bot is now configured and ready to run!"
 echo ""
 
 print_color "$CYAN" "📁 Configuration saved to:"
@@ -527,6 +543,6 @@ fi
 
 echo ""
 print_color "$PURPLE" "======================================================"
-print_color "$PURPLE" "Thank you for using RLC Bot! 🚀"
+print_color "$PURPLE" "Thank you for using this Discord Bot! 🚀"
 print_color "$PURPLE" "======================================================"
 echo ""
